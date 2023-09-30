@@ -1,4 +1,6 @@
 # Lanugage Recognizer and Parser Redo
+# Coded in Julia 1.9.3
+# Julia Compiler based on LLVM Compiler Infrastructure : https://llvm.org/
 
 # "BNF Grammar for the Language Recognizer:"
 # "<LANG> ::= RUN <CMDS> QUIT"
