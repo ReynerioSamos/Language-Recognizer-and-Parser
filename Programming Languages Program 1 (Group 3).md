@@ -8,16 +8,16 @@ Group Members:
 - Cahlil Tillet
 
 Resources : 
-[Julia Documentation](https://docs.julialang.org/en/v1/)
-[Geeks for Geeks: Julia string manipulation](https://www.geeksforgeeks.org/string-manipulation-in-julia/)
+- [Julia Documentation](https://docs.julialang.org/en/v1/)
+- [Geeks for Geeks: Julia string manipulation](https://www.geeksforgeeks.org/string-manipulation-in-julia/)
 
 Project Files: 
-[Working Branch of Code on GitHub](https://github.com/ReynerioSamos/Language-Recognizer-and-Parser)
-[Google Document for Report](https://docs.google.com/document/d/1Z34kGi6K_qYZ40BChvjn9h25pJNla69RQ7_wkEx3pVE/edit)
-[Google Slide for Presentation](https://docs.google.com/presentation/d/19IWdbifIbKpmQcPXu6dAXGsEVy753vKEg_Z0pGt-qJg/edit#slide=id.g1e82dd15846_1_423)
+- [Working Branch of Code on GitHub](https://github.com/ReynerioSamos/Language-Recognizer-and-Parser)
+- [Google Document for Report](https://docs.google.com/document/d/1Z34kGi6K_qYZ40BChvjn9h25pJNla69RQ7_wkEx3pVE/edit)
+- [Google Slide for Presentation](https://docs.google.com/presentation/d/19IWdbifIbKpmQcPXu6dAXGsEVy753vKEg_Z0pGt-qJg/edit#slide=id.g1e82dd15846_1_423)
 
 Project Components:
-[Main Program Flow Chart](https://lucid.app/lucidchart/ff0dca1b-8c85-4707-82bc-0f31cbf6c182/edit?viewport_loc=-174%2C-749%2C2932%2C1729%2C0_0&invitationId=inv_3b62a08e-3b47-4d02-ba2b-a59255fe1521)
+- [Main Program Flow Chart](https://lucid.app/lucidchart/ff0dca1b-8c85-4707-82bc-0f31cbf6c182/edit?viewport_loc=-174%2C-749%2C2932%2C1729%2C0_0&invitationId=inv_3b62a08e-3b47-4d02-ba2b-a59255fe1521)
 
 **ALL TO BE SUBMITTED AS A .ZIP BEFORE PRESENTATION @2:45 to**
 dgarcia@ub.edubz
