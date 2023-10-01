@@ -44,6 +44,7 @@ function leftderiv(input)
     end
 end
 
+# LANG() function - 
 function LANG(input)
     input = strip(input)
     if startswith(input, "RUN") & endswith(input, "QUIT")
@@ -54,11 +55,11 @@ function LANG(input)
         CMDS(input)
         return true
     else
-        println("Error: $input , invalid sentence")
+        println("Error: [$input] Invalid <LANG> Sentence")
         return false
     end
 end
-
+# CMDS() function -
 function CMDS(input)
     input = strip(input)
     if count(i->(i==';'),input)==0
@@ -66,22 +67,77 @@ function CMDS(input)
         global BNF = replace(BNF,"<LANG>"=>"      ",count=1)
         global BNF = replace(BNF,"<CMDS>"=>"<CMD>",count=1)
         println(line_count," ",BNF)
-        # CMD(input)
+        CMD(input)
+        return true
     elseif count(i->(i==';'),input)>=1
         global line_count +=1
         global BNF = replace(BNF,"<LANG>"=>"      ",count=1)
         global BNF = replace(BNF,"<CMDS>"=>"<CMD> ; <CMDS>",count=1)
         println(line_count," ",BNF)
-        #= block for spliting commands
-        pair_of_input = split(input,";";2)
-        CMD(pair_of_input[1])
-        CMDS(pair_of_input[2])
-        =#
+        # block for spliting CMDS to go to CMD and then recursive call into CMDS
+        pair_of_input = split(input,';',limit=2)
+        left = pair_of_input[1]
+        right = pair_of_input[2]
+        CMD(left)
+        CMDS(right)
+        return true
+    else
+        println("Error: [$input] Invalid <CMDS> Set")
+        return false
     end
 end
 
+# CMD() function -
 function CMD(input)
-    if startswith(input,"IF")
+    # conditional block to determine if <IF> Statement
+    input = strip(input)
+    if contains(input,"IF")
+        global line_count+=1
+        global BNF = replace(BNF,"<CMD>"=>"<IF>",count=1)
+        println(line_count," ",BNF)
+        IF(input)
+        return true
+    elseif contains(input,'+') | contains(input,'-')
+        global line_count+=1
+        global BNF = replace(BNF,"<CMD>"=>"<CALC>",count=1)
+        println(line_count," ",BNF)
+        #CALC(input)
+        return true
+    #two cases for EXP as an EXP can be just a <VAR> by itself
+    elseif contains(input,'=')
+        global line_count+=1
+        global BNF = replace(BNF,"<CMD>"=>"<EXP>",count=1)
+        println(line_count," ",BNF)
+        #EXP(input)
+        return true
+    elseif input == 'X' | 'Y' | 'Z'
+        global line_count+=1
+        global BNF = replace(BNF,"<CMD>"=>"<EXP>",count=1)
+        println(line_count," ",BNF)
+        #VAR(input)
+        return true
+    else
+        println("Error: [$input] Invalid <CMD>, not recognized.")
+        return false
+    end
+end
+
+
+function IF(input)
+    if contains(input,"THEN")
+        global line_count+=1
+        global BNF = replace(BNF,"<IF>"=>"IF <EXP> THEN <CMDS>",count=1)
+        println(line_count," ",BNF)
+        #block for spliting CMD to <EXP> and call back <CMDS>
+        pair_of_input = split(input,"THEN",limit=2)
+        left = pair_of_input[1]
+        right = pair_of_input[2]
+        # EXP(left)
+        CMDS(right)
+        return true
+    else
+        println("Error: [$input] Invalid <IF> Statement, no THEN block")
+        return false
     end
 end
 #=
