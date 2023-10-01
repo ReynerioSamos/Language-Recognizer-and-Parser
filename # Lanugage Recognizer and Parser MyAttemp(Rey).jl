@@ -15,20 +15,31 @@
 # RUN X = Y; IF Z = X THEN Y = Z QUIT
 
 # Defined in the Global Scope..
-#curr_str holds currently working input
-curr_str
 
-#right_str holds input left(ironic) to be worked on
-right_str
-
-#initializing BNF as NULL to be used in generating
-BNF
-
-input
-
+BNF = nothing
+line_count = 1
 
 #---------------------------------------------------------------------------------------------------------
 # Functions Prototypes
+
+#PrintBNF() Program to print the Initial BNF Grammar (Done incase we want to recall)
+function PrintGram()
+    println("BNF Grammar for the Language Recognizer:")
+    println("<LANG> ::= RUN <CMDS> QUIT")
+    println("<CMDS> ::= <CMD> | <CMD> ; <CMDS>")
+    println("<CMD> ::= <IF> | <EXP> | <CALC>")
+    println("<IF> ::= IF <EXP> THEN <CMDS>")
+    println("<EXP> ::= <VAR> | <VAR> = <VAR>")
+    println("<CALC> ::= <VAR> + <VAR> | <VAR> - <VAR>")
+    println("<VAR> ::= X | Y | Z")
+end
+
+#leftderiv is a boolean function to determine whether parse tree is drawn or not
+function leftderiv(input)
+    println("Deriving: [$input]...")
+    
+end
+#=
 # <LANG> -> Should recognize if sentence is accepted into language (Starts with Run and Ends with Quit)
 function LANG(input)
     input = strip(input)
@@ -168,21 +179,36 @@ function VAR(str)
         return str
     end
 end
-
+=#
 #---------------------------------------------------------------------------------------------------------
 #Main Prototype 
 function main()
-    println("You can type QUIT to exit.")
-    println("Please enter a CMD or CMDS(;) to begin :")
-    # Getting the Intial <CMDS> set
+    # print Function to display BNF
+    VERSION
+    PrintGram()
+    println("You can type QUIT as input to exit.")
     input = readline()
-    input = strip(input)
-    # Catch for if user starts with QUIT
-    if input == "QUIT"
-        println("Exiting the program...")
-        exit()
+    # while loop to keep asking for string to be derived and parsed
+    while input != "QUIT"
+        # reinitializing line_count and BNF for next derivation
+        global line_count = 1
+        global BNF = string(line_count)*" <Program> ->"
+        # asking user for string and stripping possible leading and ending whitespace
+        println("Please enter a input string to begin :")
+        input = readline()
+        input = strip(input)
+        #= commented out for now while I work on other modules
+        # if leftmost derivation returns true, parse tree is generated
+        if leftderiv(input) == true
+            drawparse(input)
+        end
+        =#
     end
+    println("Exiting program..")
+end
 
+# Old Main, used here as reference
+#=
 # boolean check if input is recognized in language grammar def
     while LANG(input) == false && input != "QUIT"
     println("Invalid Syntax, please re-enter CMD(s) or type QUIT: ")
@@ -207,5 +233,6 @@ function main()
     CMDS(curr_str)
     end
 end
+=#
 
 main()
