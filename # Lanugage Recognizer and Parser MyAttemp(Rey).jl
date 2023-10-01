@@ -183,8 +183,10 @@ end
 #---------------------------------------------------------------------------------------------------------
 #Main Prototype 
 function main()
+    # Cheeky println to display version ("Couldn't find a more verbose way")
+    println("Julia Version ", VERSION)
+    println("/-------------------------/")
     # print Function to display BNF
-    VERSION
     PrintGram()
     println("You can type QUIT as input to exit.")
     input = readline()
