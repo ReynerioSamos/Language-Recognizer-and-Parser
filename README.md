@@ -1,5 +1,4 @@
-# Language Recognizer: Leftmost Derivation and Parser Program in Julia
-**Due Date:** Monday Oct. 1st 2023 **BEFORE** 2:45 PM
+1**Due Date:** Monday Oct. 1st 2023 **BEFORE** 2:45 PM
 
 Group Members: 
 - Arthur Butler
@@ -19,6 +18,7 @@ Project Files:
 
 Project Components:
 - [Main Program Flow Chart](https://lucid.app/lucidchart/ff0dca1b-8c85-4707-82bc-0f31cbf6c182/edit?viewport_loc=-174%2C-749%2C2932%2C1729%2C0_0&invitationId=inv_3b62a08e-3b47-4d02-ba2b-a59255fe1521)
+- [Leftmost Derivation Program Flow Chart](https://lucid.app/lucidchart/934a1a38-4a3e-4152-b371-3ba25e457cc1/edit?invitationId=inv_10c03f35-a3a2-4c66-b979-3e59f45d650d)
 
 **ALL TO BE SUBMITTED AS A .ZIP BEFORE PRESENTATION @2:45 to**
 dgarcia@ub.edubz
