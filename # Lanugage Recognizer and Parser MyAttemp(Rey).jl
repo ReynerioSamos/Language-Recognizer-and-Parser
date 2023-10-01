@@ -17,7 +17,7 @@
 # Defined in the Global Scope..
 
 BNF = nothing
-line_count = 1
+line_count = 0
 
 #---------------------------------------------------------------------------------------------------------
 # Functions Prototypes
@@ -25,19 +25,64 @@ line_count = 1
 #PrintBNF() Program to print the Initial BNF Grammar (Done incase we want to recall)
 function PrintGram()
     println("BNF Grammar for the Language Recognizer:")
-    println("<LANG> ::= RUN <CMDS> QUIT")
-    println("<CMDS> ::= <CMD> | <CMD> ; <CMDS>")
-    println("<CMD> ::= <IF> | <EXP> | <CALC>")
-    println("<IF> ::= IF <EXP> THEN <CMDS>")
-    println("<EXP> ::= <VAR> | <VAR> = <VAR>")
-    println("<CALC> ::= <VAR> + <VAR> | <VAR> - <VAR>")
-    println("<VAR> ::= X | Y | Z")
+    println("<LANG> ::=  RUN <CMDS> QUIT")
+    println("<CMDS> ::=  <CMD> | <CMD> ; <CMDS>")
+    println("<CMD>  ::=  <IF> | <EXP> | <CALC>")
+    println("<IF>   ::=   IF <EXP> THEN <CMDS>")
+    println("<EXP>  ::=  <VAR> | <VAR> = <VAR>")
+    println("<CALC> ::=  <VAR> + <VAR> | <VAR> - <VAR>")
+    println("<VAR>  ::=  X | Y | Z")
 end
 
 #leftderiv is a boolean function to determine whether parse tree is drawn or not
 function leftderiv(input)
-    println("Deriving: [$input]...")
-    
+    println("\nDeriving: [$input]...")
+    if LANG(input) == true
+        return true
+    else
+        return false
+    end
+end
+
+function LANG(input)
+    input = strip(input)
+    if startswith(input, "RUN") & endswith(input, "QUIT")
+        global line_count +=1
+        global BNF = " <LANG>   -> RUN <CMDS> QUIT"
+        println(line_count," ",BNF)
+        input = strip(input[3:end-4])
+        CMDS(input)
+        return true
+    else
+        println("Error: $input , invalid sentence")
+        return false
+    end
+end
+
+function CMDS(input)
+    input = strip(input)
+    if count(i->(i==';'),input)==0
+        global line_count +=1
+        global BNF = replace(BNF,"<LANG>"=>"      ",count=1)
+        global BNF = replace(BNF,"<CMDS>"=>"<CMD>",count=1)
+        println(line_count," ",BNF)
+        # CMD(input)
+    elseif count(i->(i==';'),input)>=1
+        global line_count +=1
+        global BNF = replace(BNF,"<LANG>"=>"      ",count=1)
+        global BNF = replace(BNF,"<CMDS>"=>"<CMD> ; <CMDS>",count=1)
+        println(line_count," ",BNF)
+        #= block for spliting commands
+        pair_of_input = split(input,";";2)
+        CMD(pair_of_input[1])
+        CMDS(pair_of_input[2])
+        =#
+    end
+end
+
+function CMD(input)
+    if startswith(input,"IF")
+    end
 end
 #=
 # <LANG> -> Should recognize if sentence is accepted into language (Starts with Run and Ends with Quit)
@@ -185,28 +230,34 @@ end
 function main()
     # Cheeky println to display version ("Couldn't find a more verbose way")
     println("Julia Version ", VERSION)
-    println("/-------------------------/")
+    println("/-------------------------/\n")
+
     # print Function to display BNF
     PrintGram()
-    println("You can type QUIT as input to exit.")
-    input = readline()
+    println("\nYou can type QUIT as input to exit.")
+    input = " "
+
     # while loop to keep asking for string to be derived and parsed
     while input != "QUIT"
         # reinitializing line_count and BNF for next derivation
-        global line_count = 1
-        global BNF = string(line_count)*" <Program> ->"
+        global line_count = 0
+        global BNF = nothing
+        
         # asking user for string and stripping possible leading and ending whitespace
-        println("Please enter a input string to begin :")
+        println("\nPlease enter a input string to begin :")
         input = readline()
+        if input == "QUIT"
+            break
+        end
         input = strip(input)
-        #= commented out for now while I work on other modules
+        
         # if leftmost derivation returns true, parse tree is generated
         if leftderiv(input) == true
-            drawparse(input)
+            println("\nPrinting Parse tree for [$input]...")
+            #PrintParse(input)
         end
-        =#
     end
-    println("Exiting program..")
+    println("\nExiting program..")
 end
 
 # Old Main, used here as reference
