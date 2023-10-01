@@ -51,9 +51,10 @@ function LANG(input)
         global line_count +=1
         global BNF = " <LANG>   -> RUN <CMDS> QUIT"
         println(line_count," ",BNF)
-        input = strip(input[3:end-4])
+        input = replace(input,"RUN"=>"")
+        input = replace(input,"QUIT"=>"")
+        input = strip(input)
         CMDS(input)
-        return true
     else
         println("Error: [$input] Invalid <LANG> Sentence")
         return false
@@ -68,7 +69,6 @@ function CMDS(input)
         global BNF = replace(BNF,"<CMDS>"=>"<CMD>",count=1)
         println(line_count," ",BNF)
         CMD(input)
-        return true
     elseif count(i->(i==';'),input)>=1
         global line_count +=1
         global BNF = replace(BNF,"<LANG>"=>"      ",count=1)
@@ -80,7 +80,6 @@ function CMDS(input)
         right = pair_of_input[2]
         CMD(left)
         CMDS(right)
-        return true
     else
         println("Error: [$input] Invalid <CMDS> Set")
         return false
@@ -89,14 +88,13 @@ end
 
 # CMD() function -
 function CMD(input)
-    # conditional block to determine if <IF> Statement
     input = strip(input)
+    # conditional block to determine if <IF> Statement
     if contains(input,"IF")
         global line_count+=1
         global BNF = replace(BNF,"<CMD>"=>"<IF>",count=1)
         println(line_count," ",BNF)
         IF(input)
-        return true
     elseif contains(input,'+') | contains(input,'-')
         global line_count+=1
         global BNF = replace(BNF,"<CMD>"=>"<CALC>",count=1)
@@ -110,7 +108,7 @@ function CMD(input)
         println(line_count," ",BNF)
         #EXP(input)
         return true
-    elseif input == 'X' | 'Y' | 'Z'
+    elseif input == "X" || input == "Y" || input == "Z"
         global line_count+=1
         global BNF = replace(BNF,"<CMD>"=>"<EXP>",count=1)
         println(line_count," ",BNF)
