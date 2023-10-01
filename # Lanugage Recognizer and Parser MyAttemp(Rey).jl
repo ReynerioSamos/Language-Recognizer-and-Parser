@@ -34,7 +34,7 @@ function PrintGram()
     println("<VAR>  ::=  X | Y | Z")
 end
 
-#leftderiv is a boolean function to determine whether parse tree is drawn or not
+#leftderiv() function - is a boolean function to determine whether parse tree is drawn or not
 function leftderiv(input)
     println("\nDeriving: [$input]...")
     if LANG(input) == true
@@ -95,24 +95,33 @@ function CMD(input)
         global BNF = replace(BNF,"<CMD>"=>"<IF>",count=1)
         println(line_count," ",BNF)
         IF(input)
-    elseif contains(input,'+') | contains(input,'-')
+
+    # conditional block to determine <CALC> Statement
+    elseif contains(input,'+') | contains(input,'-') | contains(input,'*') | contains(input,'/') | contains(input,'^') | contains(input,'%')
         global line_count+=1
         global BNF = replace(BNF,"<CMD>"=>"<CALC>",count=1)
         println(line_count," ",BNF)
-        #CALC(input)
+        CALC(input)
         return true
+
     #two cases for EXP as an EXP can be just a <VAR> by itself
     elseif contains(input,'=')
         global line_count+=1
         global BNF = replace(BNF,"<CMD>"=>"<EXP>",count=1)
         println(line_count," ",BNF)
-        #EXP(input)
+        EXP(input)
         return true
+    # conditional block to determine if <EXP> is just a single <VAR>
     elseif input == "X" || input == "Y" || input == "Z"
         global line_count+=1
         global BNF = replace(BNF,"<CMD>"=>"<EXP>",count=1)
         println(line_count," ",BNF)
-        #VAR(input)
+        # does it a 2nd time since we're skipping <EXP> function call in this instance
+        # Done this way because realtalks, idk how it would pattern match a var from within an <EXP> and not just go straight to <VAR>
+        global line_count+=1
+        global BNF = replace(BNF,"<EXP>"=>"<VAR>",count=1)
+        println(line_count," ",BNF)
+        VAR(input)
         return true
     else
         println("Error: [$input] Invalid <CMD>, not recognized.")
@@ -126,11 +135,13 @@ function IF(input)
         global line_count+=1
         global BNF = replace(BNF,"<IF>"=>"IF <EXP> THEN <CMDS>",count=1)
         println(line_count," ",BNF)
-        #block for spliting CMD to <EXP> and call back <CMDS>
+        # block for spliting CMD to <EXP> and call back <CMDS>
         pair_of_input = split(input,"THEN",limit=2)
         left = pair_of_input[1]
+        # need to get rid of IF from input
+        left = replace(left,"IF"=>"",count=1)
         right = pair_of_input[2]
-        # EXP(left)
+        EXP(left)
         CMDS(right)
         return true
     else
@@ -138,6 +149,78 @@ function IF(input)
         return false
     end
 end
+
+function CALC(input)
+    input = strip(input)
+    if contains(input,'+')
+        global line_count+=1
+        global BNF = replace(BNF,"<CALC>"=>"<VAR> + <VAR>",count=1)
+        println(line_count," ",BNF)
+        # block for splitting <CALC> into two <VAR> calls
+        pair_of_input = split(input, '+', limit=2)
+        left = pair_of_input[1]
+        right = pair_of_input[2]
+        VAR(left)
+        VAR(right)
+        return true
+    elseif contains(input, '-')
+        global line_count+=1
+        global BNF = replace(BNF,"<CALC>"=>"<VAR> - <VAR>",count=1)
+        println(line_count," ",BNF)
+        # block for splitting <CALC> into two <VAR> calls
+        pair_of_input = split(input, '-', limit=2)
+        left = pair_of_input[1]
+        right = pair_of_input[2]
+        VAR(left)
+        VAR(right)
+        return true
+    else
+        println("Error: [$input] Invalid <CALC> Statement")
+        # kinda brute force but the operator (assuming its a single char) should be at index 3 of array string
+        char = input[3]
+        println("'$char' is not a valid calculation operator")
+        return false
+    end
+end
+
+# EXP() Function - only derives in <VAR> = <VAR> portion of program since 
+function EXP(input)
+    input = strip(input)
+    global line_count+=1
+    global BNF = replace(BNF,"<EXP>"=>"<VAR> = <VAR>",count=1)
+     println(line_count," ",BNF)
+    pair_of_input = split(input,'=',limit=2)
+    left = pair_of_input[1]
+    right = pair_of_input[2]
+    VAR(left)
+    VAR(right)
+    return true
+end
+
+#function VAR() - 
+function VAR(input)
+    input = strip(input)
+    if input == "X"
+        global line_count+=1
+        global BNF = replace(BNF,"<VAR>"=>"X",count=1)
+        println(line_count," ",BNF)
+        return true
+    elseif input == "Y"
+        global line_count+=1
+        global BNF = replace(BNF,"<VAR>"=>"Y",count=1)
+        println(line_count," ",BNF)
+        return true
+    elseif input == "Z"
+        global line_count+=1
+        global BNF = replace(BNF,"<VAR>"=>"Z",count=1)
+        println(line_count," ",BNF)
+        return true
+    else
+        println("Error: [$input] Invalid <VAR>")
+        return false
+    end
+end
+
 #=
 # <LANG> -> Should recognize if sentence is accepted into language (Starts with Run and Ends with Quit)
 function LANG(input)
