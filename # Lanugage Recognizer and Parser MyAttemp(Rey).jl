@@ -240,27 +240,53 @@ function VAR(input)
     end
 end
 
-#=
-function printparsetree(input)
-    input = strip(input)
+#const variables for denoting which direct tree goes
+const left = "/"
+const mid = "|"
+const right = "\\"
+const w_unit = 6
+const single_space = " "
+
+function PrintParse(input)
     component = "<LANG>"
-    
-    global max_width == length(component)
+    input = strip(input)
+    global max_width = 8
+    half_max = div(max_width,2)
+    left_space = single_space^Int(half_max*w_unit)
+    right_space = single_space^Int(half_max*w_unit)
+    mid_component = single_space^div(length(component),2)*mid*single_space^div(length(component),2)
+    println(left_space,component,right_space)
+    println(left_space,mid_component,right_space)
     parseLANG(input)
 end
-=#
 
-#=
+
+
 function parseLANG(input)
     component = "RUN <CMDS> QUIT"
-    if global maxwidth < length(component)
-        global maxwidth == length(component)
-    end
-    parseCMD(input)
+    mid_component = single_space^div(length(component),2)*mid*single_space^div(length(component),2)
+    input = replace(input,"RUN"=>"")
+    input = replace(input,"QUIT"=>"")
+    input = strip(input)
+    half_max = div(max_width,2)
+    left_space = single_space^Int(half_max*w_unit)
+    right_space = single_space^Int(half_max*w_unit)
+    println(left_space,component,right_space)
+    println(left_space, mid_component,right_space)
+    global max_width += 2
+    parseCMDS(input)
 end
-=#
+
 function parseCMDS(input)
-    component = "<CMDS>"
+    if count(i->(i==';'),input) == 0
+        component = "<CMD>"
+        mid_component = single_space^div(length(component),2)*mid*single_space^div(length(component),2)
+        half_max = div(max_width,2)
+        left_space = single_space^Int(half_max*w_unit)
+        right_space = single_space^Int(half_max*w_unit)
+
+        println(left_space,component,right_space)
+    end
 end
 
 function parseCMD(input)
@@ -328,9 +354,10 @@ function main()
         
         # if leftmost derivation returns true, parse tree is generated
         if leftderiv(input) == true
+            println("Successful derivation!")
             println("\nPrinting Parse tree for [$input]...")
             global max_width = 0
-            #PrintParse(input)
+            PrintParse(input)
         end
     end
     println("\nExiting program..")
