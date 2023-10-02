@@ -1,4 +1,7 @@
-# Lanugage Recognizer and Parser Redo
+# Lanugage Recognizer and Parser for Group 3
+# CMPS 3111 - Programming Languages
+# 2023-10-02
+
 # Coded in Julia 1.9.3
 # Julia Compiler based on LLVM Compiler Infrastructure : https://llvm.org/
 
