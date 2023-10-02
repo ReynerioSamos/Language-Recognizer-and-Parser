@@ -284,8 +284,28 @@ function parseCMDS(input)
         half_max = div(max_width,2)
         left_space = single_space^Int(half_max*w_unit)
         right_space = single_space^Int(half_max*w_unit)
-
         println(left_space,component,right_space)
+        println(left_space, mid_component,right_space)
+        #parseCMD(input)
+    elseif count(i->(i==';'),input) >= 1
+        component = "<CMD> ; <CMDS>"
+        
+        # mid component here becomes a left, and right sub-component
+        left_sub_comp = "<CMD>"
+        left_mid_comp = single_space^div(length(left_sub_comp),2)*left*single_space^div(length(left_sub_comp),2)
+        right_sub_comp = "<CMDS>"
+        right_mid_comp = single_space^div(length(right_sub_comp),2)*right*single_space^div(length(right_sub_comp),2)
+        half_max = div(max_width,2)
+        left_space = single_space^Int(half_max*w_unit)
+        right_space = single_space^Int(half_max*w_unit)
+        println(left_space,left_mid_comp,right_mid_comp,right_space)
+        println(left_space,component,right_space)
+        pair_of_input = split(input,';',limit=2)
+        left_inp = pair_of_input[1]
+        right_inp = pair_of_input[2]
+        global max_width += 2
+        #parseCMD(left_inp)
+        #parseCMDS(right_inp)
     end
 end
 
@@ -355,7 +375,7 @@ function main()
         # if leftmost derivation returns true, parse tree is generated
         if leftderiv(input) == true
             println("Successful derivation!")
-            println("\nPrinting Parse tree for [$input]...")
+            println("\nPrinting Parse tree for [$input]...\n")
             global max_width = 0
             PrintParse(input)
         end
