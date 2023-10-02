@@ -82,8 +82,11 @@ function CMDS(input)
         pair_of_input = split(input,';',limit=2)
         left = pair_of_input[1]
         right = pair_of_input[2]
-        CMD(left)
-        CMDS(right)
+        if CMD(left) == true && CMDS(right) == true
+            return true
+        else
+            return false
+        end
     else
         println("Error: [$input] Invalid <CMDS> Set")
         return false
@@ -106,7 +109,6 @@ function CMD(input)
         global BNF = replace(BNF,"<CMD>"=>"<CALC>",count=1)
         println(line_count," ",BNF)
         CALC(input)
-        return true
 
     #two cases for EXP as an EXP can be just a <VAR> by itself
     elseif contains(input,'=')
@@ -114,7 +116,6 @@ function CMD(input)
         global BNF = replace(BNF,"<CMD>"=>"<EXP>",count=1)
         println(line_count," ",BNF)
         EXP(input)
-        return true
     # conditional block to determine if <EXP> is just a single <VAR>
     elseif input == "X" || input == "Y" || input == "Z"
         global line_count+=1
@@ -126,7 +127,6 @@ function CMD(input)
         global BNF = replace(BNF,"<EXP>"=>"<VAR>",count=1)
         println(line_count," ",BNF)
         VAR(input)
-        return true
     else
         println("Error: [$input] Invalid <CMD>, not recognized.")
         return false
@@ -145,9 +145,11 @@ function IF(input)
         # need to get rid of IF from input
         left = replace(left,"IF"=>"",count=1)
         right = pair_of_input[2]
-        EXP(left)
-        CMDS(right)
-        return true
+        if EXP(left) == true && CMDS(right) == true
+            return true
+        else
+            return false
+        end
     else
         println("Error: [$input] Invalid <IF> Statement, no THEN block")
         return false
@@ -164,9 +166,11 @@ function CALC(input)
         pair_of_input = split(input, '+', limit=2)
         left = pair_of_input[1]
         right = pair_of_input[2]
-        VAR(left)
-        VAR(right)
-        return true
+        if VAR(left) == true && VAR(right) == true
+            return true
+        else
+            return false
+        end
     elseif contains(input, '-')
         global line_count+=1
         global BNF = replace(BNF,"<CALC>"=>"<VAR> - <VAR>",count=1)
@@ -175,9 +179,11 @@ function CALC(input)
         pair_of_input = split(input, '-', limit=2)
         left = pair_of_input[1]
         right = pair_of_input[2]
-        VAR(left)
-        VAR(right)
-        return true
+        if VAR(left) == true && VAR(right) == true
+            return true
+        else
+            return false
+        end
     else
         println("Error: [$input] Invalid <CALC> Statement")
         # kinda brute force but the operator (assuming its a single char) should be at index 3 of array string
@@ -196,9 +202,11 @@ function EXP(input)
     pair_of_input = split(input,'=',limit=2)
     left = pair_of_input[1]
     right = pair_of_input[2]
-    VAR(left)
-    VAR(right)
-    return true
+    if VAR(left) == true && VAR(right) == true
+        return true
+    else
+        return false
+    end
 end
 
 #function VAR() - 
@@ -225,6 +233,7 @@ function VAR(input)
     end
 end
 
+#=
 function printparsetree(input)
     input = strip(input)
     component = "<LANG>"
@@ -232,7 +241,9 @@ function printparsetree(input)
     global max_width == length(component)
     parseLANG(input)
 end
+=#
 
+#=
 function parseLANG(input)
     component = "RUN <CMDS> QUIT"
     if global maxwidth < length(component)
@@ -240,7 +251,7 @@ function parseLANG(input)
     end
     parseCMD(input)
 end
-
+=#
 function parseCMDS(input)
     component = "<CMDS>"
 end
