@@ -14,10 +14,14 @@
 # Example Instruction Set :
 # RUN X = Y; IF Z = X THEN Y = Z QUIT
 
-# Defined in the Global Scope..
+# Variables Defined in the Global Scope..
 
+# BNF is used to track working BNF string to be displayed on screen
 BNF = nothing
+# line count goes alongside BNF to show what line of decomposition we're at
 line_count = 0
+# max_width is used for parsetree printing
+max_width = 0
 
 #---------------------------------------------------------------------------------------------------------
 # Functions Prototypes
@@ -221,147 +225,63 @@ function VAR(input)
     end
 end
 
-#=
-# <LANG> -> Should recognize if sentence is accepted into language (Starts with Run and Ends with Quit)
-function LANG(input)
+function printparsetree(input)
     input = strip(input)
-    if startswith(input, "RUN") && endswith(input, "QUIT")
-        return true
-    else
-        return false
-    end
+    component = "<LANG>"
+    
+    global max_width == length(component)
+    parseLANG(input)
 end
 
-# <CMDS> -> Should recognize if it's either one <CMD> or <CMD> ; <CMDS>
-function CMDS(str)
-#prints BNF at this point (Used for compounding instruction sets)
-    println("        ->$BNF")
-# conditional check to see if ';' character is in currently working string, if not then <CMD> only is called
-# if  more than 1 then BNF
-    if count(i->(i==';'), str) == 0
-        BNF = replace(global BNF, "<CMDS>" => "<CMD>", 1)
-        println("         ->$BNF")
-        CMD(global curr_str)
-    elseif count(i->(i==';'), input) >= 1
-        global BNF = global BNF*" ; <CMDS>"
-        println("         ->$BNF")
-        pair_of_string = split(global curr_str,";";2)
-        global curr_str = pair_of_string[1]
-        global right_str = pair_of_string[2]
-        CMDS(global right_str[])
-    else
-        error("Invalid input at [$str], not valid Command Set")
-        println("Unsuccessful, Exiting derivation...")
+function parseLANG(input)
+    component = "RUN <CMDS> QUIT"
+    if global maxwidth < length(component)
+        global maxwidth == length(component)
     end
+    parseCMD(input)
 end
-# <CMD> -> should recognize if its an if-then statememnt, expressional statememnt or calculation statememnt
-function CMD(str)
-    str = strip(str)
-    println("        ->$BNF")
-    if startswith(str,"IF") && contains(str,"THEN")
-        global BNF = replace(global BNF, "<CMD>", "IF <EXP> THEN <CMDS>", 1)
-        IF_THEN(str)
-    elseif startswith(str, "IF")
-        error("Starts with IF Conditional block but no single THEN execution block detected")
-        println("Detected at $str")
-        println("Unsuccessful, Exiting derivation")
-    elseif contains(str,"+") || contains(str, "-")
-        global BNF = replace(global BNF, "<CMD>", "<CALC>", 1)
-        CALC(str)
-    elseif contains(str,"=")
-        global BNF = replace(global BNF, "<CMD>", "<CALC>", 1)
-        EXP(str)
-    else
-        error("Invalid input at $str, not valid Command")
-        println("Unsuccessful, Exiting Derivation...")
+
+function parseCMDS(input)
+    component = "<CMDS>"
+end
+
+function parseCMD(input)
+
+end
+
+
+# Tree Structure for if we want to go that route
+#=
+struct TreeNode
+    comp
+    left::Union{TreeNode, Nothing}
+    middle::Union{TreeNode,Nothing}
+    right::Union{TreeNode,Nothing}
+end
+
+function TreeNode(input)
+    return TreeNode(input, nothing, nothing, nothing)
+end
+
+function insert(root::Union{TreeNode, Nothing}, comp)
+    if root === nothing
+        return TreeNode(comp)
     end
-end
-# <IF> -> Should recognize if valid if then statmenet (If <EXP> then <CMD>)
-function IF_THEN(str)
-    println("         ->$BNF")
-    pair_of_string = split(str,"THEN";2)
-    pair_of_string[1] = replace(pair_of_string[1],"IF ","")
-    pair_of_string[1] = strip(pair_of_string[1])
-    EXP(pair_of_string[1])
-    pair_of_string[2] = strip(pair_of_string[2])
-    CMDS(pair_of_string[2])
-end
-# <EXP> -> Should recognize if valid expresion statment (<VAR> or <VAR> = <VAR>)
-function EXP(str)
-    str = strip(str)
-        if count(i->i->(i=="="),str) == 0
-            global BNF = replace(global BNF, "<CMD>", "<VAR>", 1)
-            println("         ->$BNF")
-            VAR(str)
-        elseif count(i->(i=='='), str) == 1
-            global BNF = replace(global BNF, "<CMD>", "<VAR> = <VAR>", 1)
-            println("         ->$BNF")
-            pair_of_string = split(str,"=";2)
-            pair_of_string[1] = strip(pair_of_string[1])
-            left_var = VAR(pair_of_string[1])
-            pair_of_string[2] = strip(pair_of_string[2])
-            right_var = VAR(pair_of_string[2])
-            global BNF = replace(global BNF, "<VAR>", "$left_var")
-            println("        ->$BNF")
-            global BNF = replace(global BNF, "<VAR>", "$right_var")
-        else
-            error("Invalid input at $str, not valid expression")
-            println("Unsuccessful, Exiting Derivation")
-        end
-end
-# <CALC> -> Shoudl recognize if valid calculation statememnt (<VAR> + <VAR> OR <VAR> - <VAR>)
-function CALC(str)
-    if contains(str,"+")
-        global BNF = replace(global BNF,"<CALC>","<VAR> - <VAR>", 1)
-        println("        ->$BNF")
-        pair_of_string = split(str,"+";2)
-        pair_of_string[1] = strip(pair_of_string[1])
-        left_var = VAR(pair_of_string[1])
-        pair_of_string[2] = strip(pair_of_string[2])
-        right_var = VAR(pair_of_string[2])
-        global BNF = replace(global BNF, "<VAR>", "$left_var", 1)
-        println("       ->$BNF")
-        global BNF = replace(global BNF, "<VAR>", "$right_var", 1)
-        println("        ->$BNF")
-    elseif contains(str,"-")
-        global BNF = replace(global BNF,"<CALC>","<VAR> - <VAR>", 1)
-        println("        ->$BNF")
-        pair_of_string = split(str,"-";2)
-        pair_of_string[1] = strip(pair_of_string[1])
-        left_var = VAR(pair_of_string[1])
-        pair_of_string[2] = strip(pair_of_string[2])
-        right_var = VAR(pair_of_string[2])
-        global BNF = replace(global BNF, "<VAR>", "$left_var", 1)
-        println("       ->$BNF")
-        global BNF = replace(global BNF, "<VAR>", "$right_var", 1)
-        println("        ->$BNF")
+
+    if global pos == "left"
+        root.left = insert(root.left, comp)
+    elseif global pos == "mid"
+        root.middle = insert(root.middle, comp)
+    elseif global pos == "right"
+        root.right = insert(root.right, comp)
     else
-        error("Invalid input at $str, no valid calculation operator")
-        # compounding replace() function call to replace all X Y OR Z with blank spaces to try to find invalid operator 
-        str = replace(replace(replace(str,"X"=>""),"Y"=>""),"Z"=>"")
-        str = strip(str)
-        println("$str is an invalid operator")
+        println("Don't know where to put (left, mid or right)")
     end
-end
-    
-# <VAR> -> Should recognize if valid variable is used (X, Y OR Z)
-function VAR(str)
-    if contains(str,"X")
-        return "X"
-    elseif contains(str,"Y")
-        return "Y"
-    elseif contains(str,"Z")
-        return "Z"
-    else
-        error("Invalid input at $str, no valid variable found")
-        str = replace(replace(replace(str,"X"=>""),"Y"=>""),"Z"=>"")
-        str = replace(replace(str,"+"=>""),"-"=>"")
-        str = strip(str)
-        println("$str is an invalid variable")
-        return str
-    end
+
+    return root
 end
 =#
+
 #---------------------------------------------------------------------------------------------------------
 #Main Prototype 
 function main()
@@ -372,7 +292,7 @@ function main()
     # print Function to display BNF
     PrintGram()
     println("\nYou can type QUIT as input to exit.")
-    input = " "
+    input = ""
 
     # while loop to keep asking for string to be derived and parsed
     while input != "QUIT"
@@ -391,38 +311,11 @@ function main()
         # if leftmost derivation returns true, parse tree is generated
         if leftderiv(input) == true
             println("\nPrinting Parse tree for [$input]...")
+            global max_width = 0
             #PrintParse(input)
         end
     end
     println("\nExiting program..")
 end
-
-# Old Main, used here as reference
-#=
-# boolean check if input is recognized in language grammar def
-    while LANG(input) == false && input != "QUIT"
-    println("Invalid Syntax, please re-enter CMD(s) or type QUIT: ")
-    input = readline()
-    end
-
-# Successful Program Start
-    if LANG(input) == true
-    #Stripping input string of RUN and QUIT for derivation
-    global input = strip(global input[3:end-4])
-    println("Deriving and Parsing Instruction set [$input]...")
-    #stripping of leading and ending whitespaces
-
-    global input = strip(global input)
-    # setting BNF to RUN <CMDS> QUIT as every instruction set derives from this
-    global BNF = "RUN <CMDS> QUIT"
-    # printing begining of derivation
-    println("<LANG>  ->$BNF")
-    # stripping BNF of RUN and QUIT and white space before and after to make derivation easier
-    global BNF = strip(BNF[3:end-4])
-    global BNF = strip(BNF)
-    CMDS(curr_str)
-    end
-end
-=#
 
 main()
