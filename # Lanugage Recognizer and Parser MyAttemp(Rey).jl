@@ -48,10 +48,12 @@ function leftderiv(input)
     end
 end
 
-# LANG() function - 
+# LANG() function - determines if valid RUN <CMDS> QUIT if starts with RUN and endwith QUIT
 function LANG(input)
     input = strip(input)
     if startswith(input, "RUN") & endswith(input, "QUIT")
+        # this block occurs everytime the BNF derivation is updated
+        # 1) updates line count by 1, updates BNF based on appropriate composition 3) prints current BNF pos
         global line_count +=1
         global BNF = " <LANG>   -> RUN <CMDS> QUIT"
         println(line_count," ",BNF)
@@ -60,11 +62,12 @@ function LANG(input)
         input = strip(input)
         CMDS(input)
     else
+        # for all functions, if the bools return false meaning derivation didnt happen, prints approriate error message and substring where error occured
         println("Error: [$input] Invalid <LANG> Sentence")
         return false
     end
 end
-# CMDS() function -
+# CMDS() function - derives based on if a ';' is present, if none only calls <CMD> if there is >1 then calls left substring <CMD> and remaining substring <CMDS>
 function CMDS(input)
     input = strip(input)
     if count(i->(i==';'),input)==0
@@ -93,7 +96,7 @@ function CMDS(input)
     end
 end
 
-# CMD() function -
+# CMD() function - derives based on pattern matching of whether its an <IF>, <CALC> or <EXP> syntax statememnt and updates BNF and calls functions accordingly
 function CMD(input)
     input = strip(input)
     # conditional block to determine if <IF> Statement
@@ -133,7 +136,7 @@ function CMD(input)
     end
 end
 
-
+# IF() function - pattern match done in <CMD> so now it's only worried about THEN substring, if the IF portion makes it through without THEN block it prints accoding error
 function IF(input)
     if contains(input,"THEN")
         global line_count+=1
@@ -156,6 +159,7 @@ function IF(input)
     end
 end
 
+# CALC() function - derives based on if valid operators [+,-] are present, if not, strips substring to only operator to display in error
 function CALC(input)
     input = strip(input)
     if contains(input,'+')
@@ -193,7 +197,7 @@ function CALC(input)
     end
 end
 
-# EXP() Function - only derives in <VAR> = <VAR> portion of program since 
+# EXP() Function - only derives in <VAR> = <VAR> portion of program since <VAR> portion is detected in <CMD> and accounted for
 function EXP(input)
     input = strip(input)
     global line_count+=1
@@ -209,7 +213,7 @@ function EXP(input)
     end
 end
 
-#function VAR() - 
+#function VAR() - checks if substring or in this case var is a valid recognized variable and replaces in BNF accordingly
 function VAR(input)
     input = strip(input)
     if input == "X"
